@@ -71,12 +71,12 @@ par(mfrow=c(2,1))
 acf(chain$x)
 acf(chain$u)
 # Note: the chain are quite correlated... 
-# a solution would be the Thinning
+# a solution would be the Thinning buttare via iterazioni in mezzo e prendere solo 1 su dieci
 
 plot(cumsum(chain$x)/(1:length(chain$x)), type = 'l')
 # Note: you can see that at first the chain did not converged. 
 # We throw away the initial iterations
-# that we do not want to use for estimation! BURNIN
+# that we do not want to use for estimation! BURNIN butto via le prime iterazioni
 burnin = 1000
 thin = 5
 niter
