@@ -106,7 +106,7 @@ B0= diag(c(2.25,0.0022),2,2) #Si veda Jackman (2009) p. 108 e seguenti per
 # A PRIORI, we assume that beta0 and beta1 are UNCORRELATED, i.e. independent. 
 (B0/tau0)*(nu0/(nu0-2)) # marginal priopr variance of vector beta
 b0[2]-3*sqrt((B0[2,2]/tau0)*(nu0/(nu0-2)));b0[2]+3*sqrt((B0[2,2]/tau0)*(nu0/(nu0-2)))
-# equivale ad avere assunto che a priori P(beta1<0)=0.01, cioè che P(beta1>0)=0.99
+# equivale ad avere assunto che a priori P(beta1<0)=0.01, cio? che P(beta1>0)=0.99
 # per beta0, stiamo assumendo che in (-25,25) ci sia il 95% della massa a priori 
 
 nu0=6.2
@@ -122,7 +122,7 @@ a;b
 b/(a-1)
 
 # PRIOR VARIANCE OF sigma2
-b^2/(a-1)^2/(a-2) #sigma2 è molto dispersa!
+b^2/(a-1)^2/(a-2) #sigma2 ? molto dispersa!
 
 # PRIOR MEAN and VARIANCE of tau=1/sigma2
 a/b; a/(b^2)
@@ -134,23 +134,23 @@ a/b; a/(b^2)
 M=inv(B0)
 Bn=inv(M+ t(X)%*%X)
 bn= as.vector(Bn%*%( M%*%b0 +t(X)%*% y ))
-## la posterior è così caratterizata:
+## la posterior ? cos? caratterizata:
 ## beta | sigma2, X, dati ~ N(bn, sigma^2 * Bn) 
 ## sigma^2| dati ~  inv-gamma (nun/2, nun*(sigman^2)/2)
 
-nun=as.real(nu0+n)
+nun=nu0+n
 T=inv(B0+ inv(t(X)%*%X))
 
-sigma2n=as.real(1/nun*(nu0/tau0+S2+ t(b0-betahat)%*%T%*%(b0-betahat) ))
+sigma2n=(1/nun*(nu0/tau0+S2+ t(b0-betahat)%*%T%*%(b0-betahat) ))
 
 
 Bn   
 bn           #media a posteriori di beta
-Bn*(sigma2n) #matrice di scala a posteriori di beta
-             # la covarianza A POSTERIORI tra beta0 e beta1 è diversa da 0
+as.numeric(sigma2n) * Bn #matrice di scala a posteriori di beta
+             # la covarianza A POSTERIORI tra beta0 e beta1 ? diversa da 0
 Bn*(sigma2n)*(nun/(nun-2)) # posterior covariance matrix of beta
 # POSTERIOR covariance of beta0 and beta1 is NOT 0, it is about -0.35 
-diag(as.real(sigma2hat)*inv(t(X)%*%X)) #frequentist estimate of the variance of the beta estimator 
+diag((sigma2hat)*inv(t(X)%*%X)) #frequentist estimate of the variance of the beta estimator 
 
 (nun*sigma2n/2)/((nun/2)-1) # posterior mean of sigma2
 
@@ -176,11 +176,11 @@ u2<-seq(0, 2, by=0.01)
 z <- matrix(nrow=length(u1), ncol=length(u2))
 for(mm in 1:length(u1)){
 for(nn in 1:length(u2)){
-z[mm,nn] <- dmvt( c(u1[mm], u2[nn]) , bn,Bn*(sigma2n),df=nun)
+z[mm,nn] <- dmvt( c(u1[mm], u2[nn]) , bn,Bn*as.numeric(sigma2n),df=nun)
 }
 }
 
-windows()
+x11()
 
 par(mfrow=c(1,2),mgp=c(1.70,.70,0))
 contour(u1, u2, z, levels=c(-3.5,-5,-6.5,-8,-9.5),xlim = range(u1),
@@ -206,7 +206,7 @@ contour(u1, u2, z2, levels=c(-3.5,-5,-6.5,-8,-9.5),
 ### The predictive distribution of Y_new, given x=x_{22}, is t-student (unidim in this case)
 ### with parameter (xnew*bn, sigma2pred, nuo+n) 
 xnew=c(1,-1.45) 
-mu=as.real(xnew %*%bn) # -6.16% expected value of the predicted Ynew
+mu=as.numeric(xnew %*%bn) # -6.16% expected value of the predicted Ynew
 mu           # the recorded value is 58%
 sigma2pred=(sigma2n*(1+ t(xnew)%*%Bn%*% xnew ))
 
@@ -216,7 +216,7 @@ for(mm in 1:length(u1)){
 z[mm] <- dmvt(u1[mm], mu, sigma2pred,df=nun,log=FALSE)
 }
 
-windows()
+x11()
 plot(u1,z,xlim=c(-35,73),type='l', xlab='Y_new', ylab=' ',
      main='Predictive distribution of Y_new at xnew=-1.45')
 abline(v=58.0079,col='red')
@@ -230,7 +230,7 @@ abline(v=58.0079,col='red')
 ##        sigma^2 ~ inv-gamma (nu0/2, nu0*(sigma0^2)/2)
 ##                                tau0=1/sigma0^2
 ## con B0=c(X^T X)^(-1), nu0=0
-## cioè  beta|sigma^2 ~ N(b0, sigma^2 c(X^T X)^(-1)) 
+## cio?  beta|sigma^2 ~ N(b0, sigma^2 c(X^T X)^(-1)) 
 ##        \pi(sigma^2) \prop 1/ sigma2
 ###############################################################
 b0=c(0,1) # as before
@@ -257,18 +257,18 @@ bn= as.vector(Bn%*%( M%*%b0 +t(X)%*% y ))
 ## beta | sigma2, X, dati ~ N(bn, sigma^2 * Bn) 
 ## sigma^2| dati ~ inv-gamma (nun/2, nun*(sigman^2)/2)
 
-nun=as.real(nu0+n)
+nun=as.numeric(nu0+n)
 T=inv(B0+ inv(t(X)%*%X))
 
-sigma2n=as.real(1/nun*(nu0/tau0+S2+ t(b0-betahat)%*%T%*%(b0-betahat) ))
+sigma2n=as.numeric(1/nun*(nu0/tau0+S2+ t(b0-betahat)%*%T%*%(b0-betahat) ))
 
 
 Bn   
 bn         #media a posteriori di beta
 Bn*(sigma2n) #matrice di scala a posteriori di beta
 Bn*(sigma2n)*(nun/(nun-2)) #matrice di covarianza a posteriori di beta
-## Per la var a posteriori abbiamo ottenuto valori leggermente più alti del caso coniugato vero e proprio
-diag(as.real(sigma2hat)*inv(t(X)%*%X)) #stima varianza frequentista di beta
+## Per la var a posteriori abbiamo ottenuto valori leggermente pi? alti del caso coniugato vero e proprio
+diag(as.numeric(sigma2hat)*inv(t(X)%*%X)) #stima varianza frequentista di beta
 
 (nun*sigma2n/2)/((nun/2)-1) #media a posteriori di sigma2
 
@@ -284,7 +284,7 @@ z[mm,nn] <- dmvt( c(u1[mm], u2[nn]) , bn,Bn*(sigma2n),df=nun)
 }
 }
 
-windows()
+x11()
 par(mfrow=c(1,1),mgp=c(1.70,.70,0))
 contour(u1, u2, z, levels=c(-3.5,-5,-6.5,-8,-9.5),xlim = range(u1),
         ylim = range(u2), main="Posterior density of beta - prior di Zellner",
@@ -304,12 +304,12 @@ for(mm in 1:length(u1)){
 z[mm] <- dmvt(u1[mm], mu, sigma2pred,df=nun,log=FALSE)
 }
 
-windows()
+x11()
 plot(u1,z,xlim=c(-35,73),type='l', xlab='Y_new', ylab=' ', ylim=c(0,0.03),
      main='Predictive distribution of Y_new at xnew=-1.45 - Zellner prior')
 abline(v=58.0079,col='red')
 
-# La varianza della predittiva è leggermente più grande nel caso della prior di Zellner
+# La varianza della predittiva ? leggermente pi? grande nel caso della prior di Zellner
 # per c=1
 
 #### TRY c=100!!! What happens?
@@ -405,9 +405,9 @@ modelRegress=jags.model("regression.bug",data=data,inits=inits,n.adapt=1000,n.ch
 # specified with a BUGS-language description of the prior distribution, and a set of data.
 ### USAGE:
 # jags.model(file, data=sys.frame(sys.parent()), inits, n.chains = 1, n.adapt=1000, quiet=FALSE)
-# Se inits è omessa, i valori iniziali saranno specificati automaticamente. ATTENZIONE:
-# talvolta la catena si blocca subito se inits NON è BEN specificato (anche nel caso in cui venga calcolato automaticamente)
-# Durante le prime n.adapt iterazioni, la catena è adattativa, per es. potrebbe NON essere markoviana,
+# Se inits ? omessa, i valori iniziali saranno specificati automaticamente. ATTENZIONE:
+# talvolta la catena si blocca subito se inits NON ? BEN specificato (anche nel caso in cui venga calcolato automaticamente)
+# Durante le prime n.adapt iterazioni, la catena ? adattativa, per es. potrebbe NON essere markoviana,
 # o la proposal distribution potrebbe cambiare
 
 #####save(modelRegress,file='modelregress.Rdata') 
@@ -433,11 +433,11 @@ outputRegress=coda.samples(model=modelRegress,variable.names=variable.names,n.it
 #
 # 1. Define the model using the BUGS language in a separate file.
 # 2. Read in the model file using the jags.model function. This creates an object of 
-#    class “jags”.
-# 3. Update the model using the update method for “jags” objects. This constitutes a
-     ‘burn-in’ period.
+#    class ?jags?.
+# 3. Update the model using the update method for ?jags? objects. This constitutes a
+     ?burn-in? period.
 # 4. Extract samples from the model object using the coda.samples function. This creates 
-#    an object of class “mcmc.list” which can be used to summarize the posterior 
+#    an object of class ?mcmc.list? which can be used to summarize the posterior 
 #    distribution. The coda package also provides convergence diagnostics to check that 
 #    the output is valid for analysis (see Plummer et al 2006).
 
@@ -611,7 +611,7 @@ legend("topright",legend=c("posterior median", "95% Credible bounds","kernel den
 ################################################
 ## For any x in a grid of point, we compute 90% CI of Y_new(x)| x
 ### Valori sui quali andremo a valutare la retta di regressione bayesiana, 
-### cioè la retta y = E[ beta[1]|dati]+E[ beta[2]|dati]*x
+### cio? la retta y = E[ beta[1]|dati]+E[ beta[2]|dati]*x
  
 x.gr=seq(-50,100,length=200)
 
@@ -631,7 +631,7 @@ plot(x.gr,predit,type="l",col="red",lwd=2)#this is a line: E(beta0|data)+E(beta_
 points(x,y,col="green",pch="*",cex=2) #datapoints in green!
 gra=gray(1:100/100)
 gra=rep(gra,10)
-### Questa che ho disegnato con i comandi qui sopra è una retta, perchè è la retta che associa 
+### Questa che ho disegnato con i comandi qui sopra ? una retta, perch? ? la retta che associa 
 ### ad ogni valore di x.gr il valore E(Y^*(x.gr)|dati)= E[E(Y^*(x.gr)|par,dati)|dati]
 ###                                                   = E[ beta[1]+beta[2]*x.gr |dati]
 ###                                                   = E[ beta[1]|dati]+E[ beta[2]|dati]*x.gr
@@ -647,7 +647,7 @@ lines(x.gr,predit.qua[1,],col="red",lwd=3,lty=2) ### THIS IS NOT necessarily a l
 lines(x.gr,predit.qua[2,],col="red",lwd=3,lty=2) ### THIS IS NOT necessarily a line! 
 lines(x.gr,predit,type="l",col="red",lwd=3)  ### this IS a line, i.e. it is the Bayesian regression line
                                              ### computed before
-### Invece le curve dei quantili sono curve (NON SONO NECESSARIAMENTE RETTE) che rappresentano le bande di credibilità 
+### Invece le curve dei quantili sono curve (NON SONO NECESSARIAMENTE RETTE) che rappresentano le bande di credibilit? 
 ### della retta di regressione  y = E[ beta[1]|dati]+E[ beta[2]|dati]*x
 ### Se "affetto" questo plot con una retta x= x0, ottengo la distribuzione predittiva
 ### corrispondente a x0 
