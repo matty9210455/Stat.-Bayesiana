@@ -1,0 +1,53 @@
+#############################################################  
+# STOCHASTIC SEARCH VARIABLE SELECTION: probit REGRESSION ###
+#############################################################
+
+model {
+	
+
+#likelihood 
+	for (i in 1:N){
+		for(j in 1:p){
+		temp[i,j]<-beta[j]*x[i,j]
+		}
+		mu[i] <- beta0 + sum(temp[i,])
+	
+   	 z[i]  <- phi(mu[i])
+         #probit(z[i])=mu[i]
+	 Y[i] ~ dbern(z[i])
+
+	
+      } 
+
+       
+
+for (j in 1:p){
+	TempIndicator[j]<-g[j]*pow(2, j) 
+	}
+	
+
+# model number in binary coding 
+
+mdl<- 1+sum(TempIndicator[]) 		
+
+
+
+c1<-1/(pow(tau_ss,2))
+c2<-c1/(pow(c_ss,2))
+
+
+b0prior <- 0
+##Since the Gaussian distribution
+## is parametrized in terms of precision parameter
+beta0 ~ dnorm(b0prior,0.001)
+
+for(j in 1:p)
+           {
+	bprior[j]<-0
+	tprior[j] <-equals(g[j],0)*c1+equals(g[j],1)*c2
+	beta[j] ~ dnorm(bprior[j],tprior[j]) 
+	g[j]~ dbern(0.5) 
+		}
+
+
+}
