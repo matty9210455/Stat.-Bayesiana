@@ -1,0 +1,53 @@
+########################################################################
+### NORMAL MIXTURE OF INVERSE GAMMA PRIOR: PROBIT REGRESSION ###########
+########################################################################
+
+
+
+model {
+
+#likelihood 
+    
+	for (i in 1:N){
+		for(j in 1:p){
+		temp[i,j]<-beta[j]*x[i,j]
+		}
+		mu[i] <- beta0 + sum(temp[i,])
+	
+   	 z[i]  <- phi(mu[i])
+         #probit(p[i])=mu[i]
+	 Y[i] ~ dbern(z[i])
+
+	
+      } 
+
+
+for (j in 1:p){
+   	
+	TempIndicator[j]<-g[j]*pow(2, j) 
+	}
+	
+
+# model number in binary coding 
+    mdl<- 1+sum(TempIndicator[]) 
+
+    	
+		
+
+
+b0prior <- 0
+beta0 ~ dnorm(b0prior,0.0001) 
+
+for (j in 1:p) {
+	bprior[j]<-0  
+	precision[j]<-tau_nig[j]/(equals(g[j],0)*v0+equals(g[j],1)*v1)
+ 	beta[j] ~ dnorm(bprior[j],precision[j]) 
+	g[j]~ dbern(0.5)
+        tau_nig[j]~dgamma(a,b)	
+}
+
+tau~dgamma(2,0.0001)
+sigma2 <- 1/tau
+}
+
+

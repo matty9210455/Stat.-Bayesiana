@@ -1,0 +1,58 @@
+################ JAGS per dati censurati ##########
+# Bisogna "far capire" a JAGS che ci sono dei dati censurati, perchè poi riesca a calcolare 
+# la verosimiglianza e calcolare poi le full-conditionals
+# DATA: t_i lifetimes; c_i (here cens[i]) censoring indicator
+# t[ ]     cens[ ]
+# 0.6   	  0
+# 1.3  	  0
+# 2.4  	  0
+# NA  	  2.5
+# 3.2  	  0
+
+### t_i: it contains a positive number when the time is OBSERVED, and NA for CENSORED survival time
+### c_i: it contains (alla riga corrispondente) 0 for OBSERVED times and a positive number (censoring time)
+###                 when data are CENSORED 
+
+### To denote that data are CENSORED, in the text/bug model file we write:
+###   is.censored[i] ~ dinterval(t[i], cens[i]) 
+###   t[i] ~ dweib(alpha, lambda[i])  #in generale t[i] ~ ddist(parametri)
+###  Hence is.censored[i]  =1 is t[i] is CENSORED 
+###                        =0 se t[i] is OBSERVED 
+### dinterval(t, cens) è una funzione che rappresenta general interval-censored data
+### Se t <= c_1: X=0; se c_m <  t <= c_{m+1}: X=m (con m=1,...M-1), se t> c_M: X=M.
+### Per dati rigth-censored c'è un'unico cut-point M=1, e c[] è uno scalare e 
+###      quindi X assume valori 0 e 1. 
+### In questo modo JAGS si prepara a scrivere correttamente la verosimiglianza
+
+model{ 
+ for(i in 1:106){
+   sAge[i] <- (age[i]-mean(age[ ]))/sd(age[ ]) 
+   sYr[i] <- (Yr[i]-mean(Yr[ ]))/sd(Yr[ ]) 
+   is.censored[i] ~ dinterval(t[i], cens[i])
+   t[i] ~ dweib(alpha, lambda[i])
+#   t[i] ~ dweib(alpha,lambda[i]) I(cens[i] ,)   ISTRUZIONE WinBUGS!!!
+   lambda[i] <-  log(2)*exp(-mu[i]*sqrt(tau))
+# Covariate Stage is categorical (3 dummy variables)
+   mu[i] <- beta[1] + beta[2]*equals(stage[i],2) + beta[3]*equals(stage[i],3)  + beta[4]*equals(stage[i],4) 
+                  + beta[5]*sAge[i] + beta[6]*sYr[i]    
+ }
+ alpha <- sqrt(tau)       
+ # 5 month survival probabilities corresponding to predictors in augmented data
+
+## for(i in 91:106) {
+##   S[i] <- exp(-log(2)*exp(( log(5) - mu[i])*sqrt(tau)))
+## # And estimated medians 
+##   med[i] <- exp(mu[i])  
+## }
+ for(i in 1:6){
+   beta[i] ~ dnorm(0,0.000001)
+                             # 0.000001
+ # RMs for each variable
+   rm[i] <- exp(beta[i])   
+   prob[i] <- step(beta[i]) 
+ }
+ tau ~ dgamma(0.01,0.01)    
+    # dgamma(0.01,0.01)   
+ sigma <- sqrt(1/tau)  
+}
+
